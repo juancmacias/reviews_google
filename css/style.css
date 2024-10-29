@@ -54,7 +54,9 @@ h1 {
   width: 300px;
   text-align: left;
 }
-
+.contacto{
+  text-align: left;
+}
 .review:hover {
   background-color: #f0f0f0;
 }

@@ -14,7 +14,7 @@
     <div class="container">
         <div class="cliente">
             <?php
-            $data = json_decode(file_get_contents("https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJxQQ8oG0nQg0Rg-0sKaNugIc&fields=name,rating,reviews&reviews_no_translations=false&translated=false&key=YOUR_API_KEY"), true);
+            $data = json_decode(file_get_contents("https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJxQQ8oG0nQg0Rg-0sKaNugIc&fields=name,rating,review,website,formatted_phone_number&reviews_no_translations=false&translated=false&key=API_KEY"), true);
             if ($data && isset($data['result']['reviews'])) {
                 echo '
                         <h1>Reseñas para: ' . $data['result']['name'] . '</h1>
@@ -27,6 +27,7 @@
                 }
                 $total = count($data['result']['reviews']);
                 echo '</div> de ' . $total . ($total < 1 ? ' reseñas' : ' reseña') . '.</div>';
+                echo '<div class="contacto"><a href="tel:+34'.$data['result']['formatted_phone_number'] .'" title="Llamar al '. $data['result']['name'] .'">'.$data['result']['formatted_phone_number'] .'</a> '.' <a href="'.$data['result']['website'] .'" target="_top" title="Visitar la web de '.  $data['result']['name'] .'">'.$data['result']['website'] .'</a>'.'</div>';
                 echo '<div class="reviews">';
                 // Iterar sobre las reseñas
                 foreach ($data['result']['reviews'] as $review) {
