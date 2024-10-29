@@ -18,7 +18,8 @@ Y quedaría así:
 
  Con esto nos devolvera un json si todo esta correcto, similar:
  ![Respuesta json](img/json.JPG)
-
+ En este enlace puede ver los distinto elementos te puede devolver la 'api'
+ [Campos de la api](https://developers.google.com/maps/documentation/places/web-service/place-data-fields?hl=es-419)
  Ya solo nos quedaría procesar el json para mostrar la información que  queremos.
  En mi caso voy a utilizar php, pero podemos hacer la petición en el lenguaje que más nos guste.
 
