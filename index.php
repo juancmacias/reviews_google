@@ -16,7 +16,7 @@ require_once('key.php');
     <div class="container">
         <div class="cliente">
             <?php
-            $data = json_decode(file_get_contents("https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJxQQ8oG0nQg0Rg-0sKaNugIc&fields=name,rating,review,website,formatted_phone_number&reviews_no_translations=false&translated=false&key=".$YOUR_API_KEY), true);
+            $data = json_decode(file_get_contents("https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJxQQ8oG0nQg0Rg-0sKaNugIc&fields=name,rating,review,website,formatted_phone_number&reviews_no_translations=true&translated=false&key=".$YOUR_API_KEY), true);
             if ($data && isset($data['result']['reviews'])) {
                 echo '
                         <h1>Reseñas para: ' . $data['result']['name'] . '</h1>
@@ -29,10 +29,31 @@ require_once('key.php');
                 }
                 $total = count($data['result']['reviews']);
                 echo '</div> de ' . $total . ($total < 1 ? ' reseñas' : ' reseña') . '.</div>';
-                echo '<div class="contacto"><a href="tel:+34'.$data['result']['formatted_phone_number'] .'" title="Llamar al '. $data['result']['name'] .'">'.$data['result']['formatted_phone_number'] .'</a> '.' <a href="'.$data['result']['website'] .'" target="_top" title="Visitar la web de '.  $data['result']['name'] .'">'.$data['result']['website'] .'</a>'.'</div>';
+
+                $telefono = "";
+                if(isset($data['result']['formatted_phone_number'])){
+                    $telefono = '<a href="tel:+34'.$data['result']['formatted_phone_number'] .'" title="Llamar al '. $data['result']['name'] .'">'.$data['result']['formatted_phone_number'] .'</a> ';
+                }
+                echo '<div class="contacto">'. $telefono .' <a href="'.$data['result']['website'] .'" target="_top" title="Visitar la web de '.  $data['result']['name'] .'">'.$data['result']['website'] .'</a>'.'</div>';
                 echo '<div class="reviews">';
                 // Iterar sobre las reseñas
-                foreach ($data['result']['reviews'] as $review) {
+                // Ordenar las reseñas por el campo 'time'
+
+                usort($data['result']['reviews'], function($a, $b) {
+                    return $b['time'] <=> $a['time']; // Orden ascendente
+                });
+                // Filtrar reseñas con rating superior a 3
+                $filteredReviews = array_filter($data['result']['reviews'], function($review) {
+                    return $review['rating'] > 3;
+                });
+
+                // Ordenar las reseñas filtradas por rating en orden descendente
+                usort($filteredReviews, function($a, $b) {
+                    return $b['rating'] <=> $a['rating'];
+                });
+                // Tomar solo los primeros 3 elementos
+                $topReviews = array_slice($filteredReviews, 0, 3);
+                foreach ($topReviews as $review) {
                     echo '
                  <div class="review">
                 <img src="' . $review['profile_photo_url'] . '" alt="Foto de ' . $review['author_name'] . '" class="profile-photo">
