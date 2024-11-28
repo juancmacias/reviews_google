@@ -40,7 +40,7 @@ require_once('key.php');
                 // Ordenar las reseñas por el campo 'time'
 
                 usort($data['result']['reviews'], function($a, $b) {
-                    return $b['time'] <=> $a['time']; // Orden ascendente
+                    return $b['time'] >= $a['time']; // Orden ascendente
                 });
                 // Filtrar reseñas con rating superior a 3
                 $filteredReviews = array_filter($data['result']['reviews'], function($review) {
@@ -51,8 +51,8 @@ require_once('key.php');
                 usort($filteredReviews, function($a, $b) {
                     return $b['rating'] <=> $a['rating'];
                 });
-                // Tomar solo los primeros 3 elementos
-                $topReviews = array_slice($filteredReviews, 0, 3);
+                // Tomar solo los primeros 10 elementos
+                $topReviews = array_slice($filteredReviews, 0, 10);
                 foreach ($topReviews as $review) {
                     echo '
                  <div class="review">
