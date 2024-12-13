@@ -3,7 +3,7 @@ proyecto para mostrar las reseñas en Google mapa de los usuarios.
 - desarrollado en php
 - uso de api de google map
 
-Antees de comenzar debemos saber el id particular del comercio para ello debemos ir:
+Antes de comenzar debemos saber el id particular del comercio para ello debemos ir:
 [Buscar id comercio](https://developers.google.com/maps/documentation/places/web-service/place-id?hl=es-419#places-api)
 ![Pantalla de busqueda](<img/buscar_id.JPG>)
 Me he buscado, ese es el resultado.
@@ -15,7 +15,8 @@ Ahora solo nos queda montar la url con estos dos datos:
 - key = YOUR_API_KEY
 Y quedaría así:
  https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJrTLr-GyuEmsRBfy61i59si0&key=YOUR_API_KEY
-
+Para continuar debemos sber que los datos devueltos son solo los ultimos 5 reseñas por orden de importancia, pero tenemos la opción de mostrar las últimas 5 con '&reviews_sort=newest', quedaría así:
+    https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJrTLr-GyuEmsRBfy61i59si0&key=YOUR_API_KEY&reviews_sort=newest
  Con esto nos devolvera un json si todo esta correcto, similar:
  ![Respuesta json](img/json.JPG)
  En este enlace puede ver los distinto elementos te puede devolver la 'api'

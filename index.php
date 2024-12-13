@@ -16,7 +16,7 @@ require_once('key.php');
     <div class="container">
         <div class="cliente">
             <?php
-            $data = json_decode(file_get_contents("https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJxQQ8oG0nQg0Rg-0sKaNugIc&fields=name,rating,review,website,formatted_phone_number&reviews_no_translations=true&translated=false&key=".$YOUR_API_KEY), true);
+            $data = json_decode(file_get_contents("https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJxQQ8oG0nQg0Rg-0sKaNugIc&fields=name,rating,review,website,formatted_phone_number&reviews_no_translations=true&translated=false&key=".$YOUR_API_KEY."&reviews_sort=newest"), true);
             if ($data && isset($data['result']['reviews'])) {
                 echo '
                         <h1>Reseñas para: ' . $data['result']['name'] . '</h1>
