@@ -22,63 +22,79 @@ require_once('key.php');
                         <h1>Reseñas para: ' . $data['result']['name'] . '</h1>
                         <div class="def">';
 
-                echo $data['result']['rating'];
+                echo '<span style="font-size: 56px; font-weight: 300;">' . number_format($data['result']['rating'], 1) . '</span>';
                 echo '<div class="estrellas">';
-                for ($i = 0; $i < $data['result']['rating']; $i++) {
-                    echo '<span class="gral" ><i class="fa-solid fa-star"></i></span>';
+                $rating = $data['result']['rating'];
+                for ($i = 1; $i <= 5; $i++) {
+                    if ($i <= floor($rating)) {
+                        echo '<span class="gral"><i class="fa-solid fa-star"></i></span>';
+                    } else if ($i == ceil($rating) && $rating != floor($rating)) {
+                        echo '<span class="gral"><i class="fa-solid fa-star-half-stroke"></i></span>';
+                    } else {
+                        echo '<span style="color: #e8eaed;"><i class="fa-solid fa-star"></i></span>';
+                    }
                 }
                 $total = count($data['result']['reviews']);
-                echo '</div> de ' . $total . ($total < 1 ? ' reseñas' : ' reseña') . '.</div>';
+                echo '</div><span style="font-size: 14px; color: #70757a; margin-left: 8px;">(' . $total . ($total != 1 ? ' reseñas' : ' reseña') . ')</span></div>';
 
                 $telefono = "";
                 if(isset($data['result']['formatted_phone_number'])){
                     $telefono = '<a href="tel:+34'.$data['result']['formatted_phone_number'] .'" title="Llamar al '. $data['result']['name'] .'">'.$data['result']['formatted_phone_number'] .'</a> ';
                 }
-                echo '<div class="contacto">'. $telefono .' <a href="'.$data['result']['website'] .'" target="_top" title="Visitar la web de '.  $data['result']['name'] .'">'.$data['result']['website'] .'</a>'.'</div>';
+                
+                // Separar las URLs si hay múltiples separadas por punto y coma
+                $websites = "";
+                if(isset($data['result']['website'])){
+                    $urls = explode(';', $data['result']['website']);
+                    $websiteLinks = array();
+                    foreach($urls as $individualUrl){
+                        $individualUrl = trim($individualUrl);
+                        if(!empty($individualUrl)){
+                            // Decodificar URL si está codificada
+                            $individualUrl = urldecode($individualUrl);
+                            // Limpiar espacios
+                            $individualUrl = trim($individualUrl);
+                            // Si la URL ya tiene protocolo duplicado (ej: " https://..."), remover el espacio
+                            $individualUrl = preg_replace('/^\s*(https?:\/\/)/', '$1', $individualUrl);
+                            // Asegurar que la URL tenga el protocolo http:// o https://
+                            if(!preg_match('/^https?:\/\//', $individualUrl)){
+                                $individualUrl = 'https://' . $individualUrl;
+                            }
+                            $websiteLinks[] = '<a href="'.$individualUrl.'" target="_top" title="Visitar la web de '.$data['result']['name'].'">'.$individualUrl.'</a>';
+                        }
+                    }
+                    $websites = implode(' | ', $websiteLinks);
+                }
+                
+                echo '<div class="contacto">'. $telefono . $websites .'</div>';
                 echo '<div class="reviews">';
                 // Iterar sobre las reseñas
-                // Ordenar las reseñas por el campo 'time'
+                // Ordenar las reseñas por el campo 'time' (más recientes primero)
 
                 usort($data['result']['reviews'], function($a, $b) {
-                    return $b['time'] >= $a['time']; // Orden ascendente
+                    return $b['time'] - $a['time'];
                 });
-                // Filtrar reseñas con rating superior a 3
-                $filteredReviews = array_filter($data['result']['reviews'], function($review) {
-                    return $review['rating'] > 3;
-                });
-
-                // Ordenar las reseñas filtradas por rating en orden descendente
-                usort($filteredReviews, function($a, $b) {
-                    return $b['rating'] <=> $a['rating'];
-                });
-                // Tomar solo los primeros 10 elementos
-                $topReviews = array_slice($filteredReviews, 0, 10);
-                foreach ($topReviews as $review) {
+                
+                // Mostrar todas las reseñas que devuelve la API (máximo 5 según limitación de Google)
+                foreach ($data['result']['reviews'] as $review) {
                     echo '
                  <div class="review">
                 <img src="' . $review['profile_photo_url'] . '" alt="Foto de ' . $review['author_name'] . '" class="profile-photo">
                 <h2>' . $review['author_name'] . '</h2>';
             ?>
                     <div class="rating">
-                        <i class="fa-regular fa-star"></i>
-                        <span class="kvMYJc" role="img" aria-label="5 estrellas">
+                        <span class="kvMYJc" role="img" aria-label="<?php echo $review['rating']; ?> estrellas">
                             <?php
-                            $res = 5 - $review['rating'];
-                            for ($i = 1; $i < $review['rating']; $i++) {
-                            ?>
-                                <span class="hCCjke  NhBTye elGi1d"><i class="fa-solid fa-star"></i></span>
-                            <?php
-                            }
-                            for ($i = 1; $i < $res; $i++) {
-                            ?>
-                                <span class="neutro"><i class="fa-regular fa-star"></i></span>
-                            <?php
+                            for ($i = 1; $i <= 5; $i++) {
+                                if ($i <= $review['rating']) {
+                                    echo '<span class="hCCjke"><i class="fa-solid fa-star"></i></span>';
+                                } else {
+                                    echo '<span class="neutro"><i class="fa-solid fa-star"></i></span>';
+                                }
                             }
                             ?>
-
                         </span>
                         <span class="rsqaWe"><?php echo $review['relative_time_description'] ?></span>
-                        <div class="Tuisuc"></div>
                     </div>
             <?php
                     echo '
